@@ -1,5 +1,4 @@
-﻿# Large datasets
-*.parquet
+# Large datasets
 *.csv
 *.zip
 
