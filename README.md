@@ -26,7 +26,7 @@
 10. [REST API Documentation & Endpoints](#rest-api-documentation--endpoints)
 11. [Repository & Codebase Structure](#repository--codebase-structure)
 12. [Installation & Setup Instructions](#installation--setup-instructions)
-13. [Execution Guide (CLI & Web Services)](#execution-guide-cli--web-services)
+13. [Execution Guide (Automated & Manual)](#execution-guide-automated--manual)
 14. [Hardware Profiling & CPU Optimizations](#hardware-profiling--cpu-optimizations)
 15. [Limitations & Future Roadmap](#limitations--future-roadmap)
 
@@ -472,49 +472,64 @@ cd ..
 
 ---
 
-## Execution Guide (CLI & Web Services)
+## Execution Guide (Automated & Manual)
 
-### 1. Standalone Model Training via CLI
+### Method A: 1-Click Automated Run (Recommended)
 
-```bash
-py -3.13 train.py --epochs 5 --model mobilenet_v3 --batch_size 32 --lr 0.001
-```
+You do **NOT** need to open multiple command windows manually. Use the one-click launcher:
 
-This command will:
-1. Load and verify the preprocessed tensor cache.
-2. Train MobileNetV3-Small on CPU with real-time epoch logs.
-3. Automatically evaluate on all 361 independent test set receipts.
-4. Save `models/best_model.pt` and `artifacts/evaluation_metrics.json`.
+- **Windows Batch (Command Prompt / Double Click)**:
+  Simply double-click [`run.bat`](file:///f:/Cognivision%20AI/run.bat) or run:
+  ```cmd
+  run.bat
+  ```
 
-### 2. Standalone Model Evaluation via CLI
+- **PowerShell**:
+  ```powershell
+  .\run.ps1
+  ```
 
-```bash
-py -3.13 evaluate.py --model_path models/best_model.pt
-```
+What the automated launcher does automatically:
+1. Verifies Python 3.13 environment.
+2. Spawns the FastAPI backend server on `http://127.0.0.1:8000`.
+3. Spawns the React + Vite frontend server on `http://localhost:5173`.
+4. Automatically opens `http://localhost:5173` in your default browser.
 
-Outputs the full evaluation metrics, 6×6 confusion matrix, and class-wise breakdown.
+---
 
-### 3. Launching the FastAPI Backend
+### Method B: Manual Step-by-Step Run
 
+If you prefer to run services manually in individual terminal windows:
+
+#### Terminal 1 — Start FastAPI Backend:
 ```bash
 py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-
-- REST API Root: `http://127.0.0.1:8000`
+- REST API: `http://127.0.0.1:8000`
 - Interactive Swagger UI: `http://127.0.0.1:8000/docs`
 - Health Check: `http://127.0.0.1:8000/api/health`
 
-### 4. Launching the React Frontend
-
-In a separate terminal window:
-
+#### Terminal 2 — Start React Frontend:
 ```bash
 cd frontend
 npm run dev
 ```
-
 - Open `http://localhost:5173` in your browser.
-- All API requests are automatically proxied to the backend on port 8000.
+- All `/api/*` network requests automatically route to the backend on port 8000.
+
+---
+
+### Method C: Standalone CLI Training & Evaluation
+
+#### 1. Train Model via CLI:
+```bash
+py -3.13 train.py --epochs 5 --model mobilenet_v3 --batch_size 32 --lr 0.001
+```
+
+#### 2. Evaluate Saved Model via CLI:
+```bash
+py -3.13 evaluate.py --model_path models/best_model.pt
+```
 
 ---
 
