@@ -1,0 +1,19 @@
+﻿# Large datasets
+*.parquet
+*.csv
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment
+.env
+
+# ML models
+*.pt
+*.pth
+*.bin
+*.safetensors
