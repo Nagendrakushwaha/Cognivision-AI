@@ -9,7 +9,9 @@ import {
   Layers,
   Sliders,
   TrendingUp,
-  Activity
+  Activity,
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import {
   LineChart,
@@ -38,6 +40,7 @@ export default function ModelTraining({ onTrainingComplete }) {
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [internalViewTab, setInternalViewTab] = useState('architecture');
 
   // Fetch status on mount and poll while training
   useEffect(() => {
@@ -486,6 +489,260 @@ export default function ModelTraining({ onTrainingComplete }) {
           </div>
         </div>
       )}
+
+      {/* Inside the Model: Architecture & Training Dynamics */}
+      <div className="glass-panel" style={{ padding: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Cpu size={20} color="#06B6D4" />
+            <div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>
+                Neural Network Internals: {config.model_name === 'cogninet_cnn' ? 'CogniNet-CNN' : 'MobileNetV3-Small'}
+              </h3>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
+                How receipt visual features propagate forward, compute loss, and update gradients during training
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', backgroundColor: 'rgba(255, 255, 255, 0.04)', padding: '4px', borderRadius: '8px' }}>
+            <button
+              onClick={() => setInternalViewTab('architecture')}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                backgroundColor: internalViewTab === 'architecture' ? '#8B5CF6' : 'transparent',
+                color: internalViewTab === 'architecture' ? '#FFFFFF' : 'var(--text-dim)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Layer-by-Layer Architecture
+            </button>
+            <button
+              onClick={() => setInternalViewTab('pipeline')}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                backgroundColor: internalViewTab === 'pipeline' ? '#8B5CF6' : 'transparent',
+                color: internalViewTab === 'pipeline' ? '#FFFFFF' : 'var(--text-dim)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              4-Phase Training Loop
+            </button>
+          </div>
+        </div>
+
+        {internalViewTab === 'architecture' ? (
+          <div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '14px',
+              marginBottom: '16px'
+            }}>
+              {config.model_name === 'cogninet_cnn' ? (
+                <>
+                  {/* Stage 1 */}
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span className="badge badge-purple" style={{ fontSize: '0.68rem' }}>Stage 1 • Conv2D</span>
+                      <span style={{ fontSize: '0.72rem', color: '#A78BFA', fontWeight: 600 }}>[B, 32, 112, 112]</span>
+                    </div>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Edge & Stroke Extraction</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      32 filters (3x3), BatchNorm2d, ReLU, MaxPool(2x2). Detects raw receipt paper borders, high-contrast ink edges, and character stroke lines.
+                    </p>
+                  </div>
+
+                  {/* Stage 2 */}
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span className="badge badge-cyan" style={{ fontSize: '0.68rem' }}>Stage 2 • Conv2D</span>
+                      <span style={{ fontSize: '0.72rem', color: '#67E8F9', fontWeight: 600 }}>[B, 64, 56, 56]</span>
+                    </div>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Word & Numerical Blocks</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      64 filters (3x3), BatchNorm2d, ReLU, MaxPool(2x2). Synthesizes strokes into character groups, currency signs ($/RM), item prices, and date stamps.
+                    </p>
+                  </div>
+
+                  {/* Stage 3 */}
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span className="badge badge-emerald" style={{ fontSize: '0.68rem' }}>Stage 3 • Conv2D</span>
+                      <span style={{ fontSize: '0.72rem', color: '#6EE7B7', fontWeight: 600 }}>[B, 128, 28, 28]</span>
+                    </div>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Spatial Layout Geometry</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      128 filters (3x3), BatchNorm2d, ReLU, MaxPool(2x2). Captures multi-line tabular receipt structure: company headers, address blocks, itemized lists.
+                    </p>
+                  </div>
+
+                  {/* Stage 4 */}
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span className="badge badge-amber" style={{ fontSize: '0.68rem' }}>Stage 4 • Conv2D (Grad-CAM)</span>
+                      <span style={{ fontSize: '0.72rem', color: '#FCD34D', fontWeight: 600 }}>[B, 256, 14, 14]</span>
+                    </div>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Semantic Category Cues</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      256 filters (3x3), BatchNorm2d, ReLU, MaxPool(2x2). High-level merchant category signatures (e.g. restaurant tables, grocery barcodes, fuel headers).
+                    </p>
+                  </div>
+
+                  {/* Classifier Head */}
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(244, 63, 94, 0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span className="badge" style={{ backgroundColor: 'rgba(244, 63, 94, 0.2)', color: '#FDA4AF', fontSize: '0.68rem' }}>GAP + Linear</span>
+                      <span style={{ fontSize: '0.72rem', color: '#FDA4AF', fontWeight: 600 }}>[B, 6] Logits</span>
+                    </div>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Category Classification Head</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      AdaptiveAvgPool2d(1,1) collapses spatial grids into a 256-D vector. Dropout(0.3) + Linear(256→6) produces 6 category logits for CrossEntropyLoss.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                    <span className="badge badge-purple" style={{ fontSize: '0.68rem', marginBottom: '8px', display: 'inline-block' }}>Input & Initial Conv</span>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Hard-Swish Feature Entry</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      Conv2D 3→16 with stride 2. Receptive field downsamples raw receipt to [B, 16, 112, 112] with hardware-friendly Hard-Swish non-linearities.
+                    </p>
+                  </div>
+
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+                    <span className="badge badge-cyan" style={{ fontSize: '0.68rem', marginBottom: '8px', display: 'inline-block' }}>11 Inverted Residual Blocks</span>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Depthwise Separable + SE Attention</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      Depthwise 3x3/5x5 convolutions combined with Squeeze-and-Excitation (SE) channel-attention blocks, extracting receipt patterns efficiently on CPU.
+                    </p>
+                  </div>
+
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                    <span className="badge badge-emerald" style={{ fontSize: '0.68rem', marginBottom: '8px', display: 'inline-block' }}>Target Layer (Grad-CAM)</span>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Final Conv Feature Space</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      Final feature block output [B, 576, 7, 7]. Visual gradients during inference are backpropagated directly to this layer to compute Grad-CAM heatmaps.
+                    </p>
+                  </div>
+
+                  <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                    <span className="badge badge-amber" style={{ fontSize: '0.68rem', marginBottom: '8px', display: 'inline-block' }}>Dense Head • 6 Classes</span>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 4px 0', color: '#FFFFFF' }}>Linear(576→1024→6)</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                      Global Average Pooling collapses spatial grid to 576-D vector. Two-stage projection with Dropout(0.2) outputs 6 merchant class confidence logits.
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div style={{ padding: '12px 16px', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <span>
+                <strong>Tensor Flow:</strong> [Batch, 3, 224, 224] → 4 Conv Stages → Global Avg Pool → [Batch, 256] → Linear → [Batch, 6] Logits
+              </span>
+              <span style={{ color: '#10B981', fontWeight: 600 }}>Zero GPU Required • Float32 CPU Inference</span>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '14px',
+              marginBottom: '16px'
+            }}>
+              {/* Phase 1 */}
+              <div style={{
+                padding: '16px',
+                borderRadius: '10px',
+                backgroundColor: isTraining ? 'rgba(139, 92, 246, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                border: isTraining ? '1px solid #8B5CF6' : '1px solid var(--border-subtle)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <span className="badge badge-purple" style={{ fontSize: '0.68rem' }}>Phase 1</span>
+                  {isTraining && <Activity size={12} className="pulse-glow" color="#8B5CF6" />}
+                </div>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 6px 0', color: '#FFFFFF' }}>Forward Propagation</h4>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                  Batch of 32 receipt tensors passes through all convolution and pooling layers. Each layer computes affine transform <code style={{ color: '#A78BFA' }}>Z = W·X + b</code> and ReLU activation, emitting raw logits <code style={{ color: '#A78BFA' }}>[32, 6]</code>.
+                </p>
+              </div>
+
+              {/* Phase 2 */}
+              <div style={{
+                padding: '16px',
+                borderRadius: '10px',
+                backgroundColor: isTraining ? 'rgba(6, 182, 212, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                border: isTraining ? '1px solid #06B6D4' : '1px solid var(--border-subtle)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <span className="badge badge-cyan" style={{ fontSize: '0.68rem' }}>Phase 2</span>
+                  {isTraining && <Activity size={12} className="pulse-glow" color="#06B6D4" />}
+                </div>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 6px 0', color: '#FFFFFF' }}>Loss Function Evaluation</h4>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                  Cross-Entropy computes log-loss: <code style={{ color: '#67E8F9' }}>L = -log(e^(z_k) / Σ e^(z_j))</code>. Penalizes confident incorrect predictions and produces scalar loss value for the mini-batch.
+                </p>
+              </div>
+
+              {/* Phase 3 */}
+              <div style={{
+                padding: '16px',
+                borderRadius: '10px',
+                backgroundColor: isTraining ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                border: isTraining ? '1px solid #10B981' : '1px solid var(--border-subtle)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <span className="badge badge-emerald" style={{ fontSize: '0.68rem' }}>Phase 3</span>
+                  {isTraining && <Activity size={12} className="pulse-glow" color="#10B981" />}
+                </div>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 6px 0', color: '#FFFFFF' }}>Autograd Backpropagation</h4>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                  PyTorch Autograd traverses the dynamic computational graph backward using the multivariable chain rule: <code style={{ color: '#6EE7B7' }}>∂L/∂W = ∂L/∂A · ∂A/∂Z · ∂Z/∂W</code>, computing exact weight gradients.
+                </p>
+              </div>
+
+              {/* Phase 4 */}
+              <div style={{
+                padding: '16px',
+                borderRadius: '10px',
+                backgroundColor: isTraining ? 'rgba(245, 158, 11, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                border: isTraining ? '1px solid #F59E0B' : '1px solid var(--border-subtle)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <span className="badge badge-amber" style={{ fontSize: '0.68rem' }}>Phase 4</span>
+                  {isTraining && <Activity size={12} className="pulse-glow" color="#F59E0B" />}
+                </div>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 6px 0', color: '#FFFFFF' }}>{config.optimizer} Parameter Update</h4>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, lineHeight: 1.4 }}>
+                  Adaptive moment estimation computes moving averages of gradients <code style={{ color: '#FCD34D' }}>m_t</code> and squared gradients <code style={{ color: '#FCD34D' }}>v_t</code>. Updates all weights: <code style={{ color: '#FCD34D' }}>W ← W - η·m̂/(√v̂ + ε)</code>.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ padding: '12px 16px', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <span>
+                <strong>Optimization Step:</strong> loss.backward() computes tensor gradients → optimizer.step() updates weights → optimizer.zero_grad() resets buffers for next batch.
+              </span>
+              <span style={{ color: '#A78BFA', fontWeight: 600 }}>
+                {status ? `Current Epoch Loss: ${status.current_train_loss || '--'}` : 'Ready'}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
