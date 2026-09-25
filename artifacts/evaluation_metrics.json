@@ -1,0 +1,116 @@
+{
+  "is_trained": true,
+  "model_name": "mobilenet_v3",
+  "evaluated_samples": 361,
+  "accuracy": 0.3629,
+  "macro_precision": 0.1596,
+  "macro_recall": 0.2246,
+  "macro_f1": 0.1626,
+  "weighted_precision": 0.2367,
+  "weighted_recall": 0.3629,
+  "weighted_f1": 0.2504,
+  "roc_auc": 0.6596,
+  "confusion_matrix": [
+    [
+      0,
+      42,
+      1,
+      3,
+      0,
+      0
+    ],
+    [
+      0,
+      97,
+      0,
+      7,
+      0,
+      0
+    ],
+    [
+      0,
+      43,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      48,
+      0,
+      34,
+      0,
+      0
+    ],
+    [
+      0,
+      38,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      39,
+      0,
+      7,
+      0,
+      0
+    ]
+  ],
+  "classes": [
+    "Bakery & Confectionery",
+    "General Retail & Services",
+    "Hardware & Home",
+    "Restaurant & Dining",
+    "Stationery & Bookstore",
+    "Supermarket & Grocery"
+  ],
+  "class_wise_metrics": [
+    {
+      "class_name": "Bakery & Confectionery",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 46
+    },
+    {
+      "class_name": "General Retail & Services",
+      "precision": 0.31596091205211724,
+      "recall": 0.9326923076923077,
+      "f1_score": 0.4720194647201946,
+      "support": 104
+    },
+    {
+      "class_name": "Hardware & Home",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 44
+    },
+    {
+      "class_name": "Restaurant & Dining",
+      "precision": 0.6415094339622641,
+      "recall": 0.4146341463414634,
+      "f1_score": 0.5037037037037037,
+      "support": 82
+    },
+    {
+      "class_name": "Stationery & Bookstore",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 39
+    },
+    {
+      "class_name": "Supermarket & Grocery",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 46
+    }
+  ],
+  "evaluated_at": "2026-09-25 16:19:14"
+}

@@ -1,0 +1,39 @@
+{
+  "model_name": "mobilenet_v3",
+  "epochs": 4,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.6483,
+      "train_acc": 0.3273,
+      "val_loss": 1.7166,
+      "val_acc": 0.28,
+      "duration_seconds": 4.21
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.3624,
+      "train_acc": 0.479,
+      "val_loss": 1.6864,
+      "val_acc": 0.36,
+      "duration_seconds": 4.14
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.2486,
+      "train_acc": 0.5369,
+      "val_loss": 1.8051,
+      "val_acc": 0.296,
+      "duration_seconds": 6.63
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.0881,
+      "train_acc": 0.5948,
+      "val_loss": 1.7243,
+      "val_acc": 0.328,
+      "duration_seconds": 4.2
+    }
+  ],
+  "saved_at": "2026-09-25 16:19:09"
+}
