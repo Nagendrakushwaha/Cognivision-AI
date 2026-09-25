@@ -1,7 +1,15 @@
 import React from 'react';
 import { Activity, Database, CheckCircle2, Cpu } from 'lucide-react';
 
-export default function Navbar({ activeTitle, isBackendHealthy = true, modelTrained = true }) {
+export default function Navbar({ activeTitle, isBackendHealthy = true, modelTrained = false, activeModelName = null }) {
+  const formatModelName = (name) => {
+    if (!name) return 'MobileNetV3';
+    if (name.toLowerCase().includes('cogni')) return 'CogniNet-CNN';
+    if (name.toLowerCase().includes('mobile')) return 'MobileNetV3';
+    return name;
+  };
+  const displayModel = formatModelName(activeModelName);
+
   return (
     <header style={{
       height: '68px',
@@ -35,7 +43,7 @@ export default function Navbar({ activeTitle, isBackendHealthy = true, modelTrai
         {/* Model Status Badge */}
         <div className={`badge ${modelTrained ? 'badge-emerald' : 'badge-amber'}`} style={{ padding: '6px 12px' }}>
           <CheckCircle2 size={13} />
-          <span>{modelTrained ? 'Model Active: MobileNetV3' : 'Model: Untrained'}</span>
+          <span>{modelTrained ? `Model Active: ${displayModel}` : 'Model: Untrained'}</span>
         </div>
 
         {/* Python Version & Backend Status */}

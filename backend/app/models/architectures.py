@@ -4,6 +4,20 @@ import torch.nn.functional as F
 import torchvision.models as models
 import numpy as np
 
+def get_device():
+    """Robust device selection: GPU if available, else CPU."""
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def find_last_conv_layer(model: nn.Module) -> nn.Module:
+    """Dynamically traverses any model architecture to find its final Conv2d layer."""
+    last_conv = None
+    for name, module in model.named_modules():
+        if isinstance(module, nn.Conv2d):
+            last_conv = module
+    if last_conv is None:
+        raise ValueError(f"No Conv2d layer found in architecture: {type(model).__name__}")
+    return last_conv
+
 class CogniNetCNN(nn.Module):
     """
     Lightweight, high-speed custom CNN tailored for receipt visual document classification
@@ -11,6 +25,7 @@ class CogniNetCNN(nn.Module):
     """
     def __init__(self, num_classes=6, in_channels=3):
         super(CogniNetCNN, self).__init__()
+        self.num_classes = num_classes
         
         # Stage 1: (B, 3, 224, 224) -> (B, 32, 112, 112)
         self.conv1 = nn.Sequential(
@@ -36,7 +51,7 @@ class CogniNetCNN(nn.Module):
             nn.MaxPool2d(2, 2)
         )
         
-        # Stage 4: (B, 128, 28, 28) -> (B, 256, 14, 14)
+        # Stage 4: (B, 128, 28, 28) -> (B, 256, 28, 28) -> (B, 256, 1, 1)
         self.conv4 = nn.Sequential(
             nn.Conv2d(128, 256, kernel_size=3, padding=1, bias=False),
             nn.BatchNorm2d(256),
@@ -62,7 +77,7 @@ class CogniNetCNN(nn.Module):
         return x
 
     def get_cam_target_layer(self):
-        # Target layer for Grad-CAM
+        # Target the final convolutional stage before global pooling
         return self.conv4[0]
 
 
@@ -72,6 +87,7 @@ class MobileNetV3Classifier(nn.Module):
     """
     def __init__(self, num_classes=6, pretrained=True):
         super(MobileNetV3Classifier, self).__init__()
+        self.num_classes = num_classes
         weights = models.MobileNet_V3_Small_Weights.DEFAULT if pretrained else None
         base_model = models.mobilenet_v3_small(weights=weights)
         
@@ -94,23 +110,32 @@ class MobileNetV3Classifier(nn.Module):
         return x
 
     def get_cam_target_layer(self):
-        return self.features[-1]
+        # Dynamically returns the last Conv2d layer within the features hierarchy
+        return find_last_conv_layer(self.features)
 
 
 class GradCAM:
     """
     Gradient-weighted Class Activation Mapping (Grad-CAM)
-    Visual explainability engine for convolutional vision models.
+    Visual explainability engine for convolutional vision models with dynamic layer discovery.
     """
-    def __init__(self, model, target_layer=None):
-        self.model = model
-        self.target_layer = target_layer if target_layer is not None else model.get_cam_target_layer()
+    def __init__(self, model: nn.Module, target_layer=None, device=None):
+        self.device = device or get_device()
+        self.model = model.to(self.device)
+        
+        if target_layer is not None:
+            self.target_layer = target_layer
+        elif hasattr(model, 'get_cam_target_layer'):
+            self.target_layer = model.get_cam_target_layer()
+        else:
+            self.target_layer = find_last_conv_layer(model)
+            
         self.gradients = None
         self.activations = None
         self.hook_handles = []
-        self._register_hooks()
 
     def _register_hooks(self):
+        self.remove_hooks()
         def forward_hook(module, input, output):
             self.activations = output.detach()
 
@@ -122,47 +147,60 @@ class GradCAM:
 
     def remove_hooks(self):
         for h in self.hook_handles:
-            h.remove()
+            try:
+                h.remove()
+            except Exception:
+                pass
         self.hook_handles = []
 
-    def generate(self, input_tensor, target_class=None):
+    def generate(self, input_tensor: torch.Tensor, target_class: int = None):
         self.model.eval()
-        self.model.zero_grad()
+        self._register_hooks()
         
-        if input_tensor.dim() == 3:
-            input_tensor = input_tensor.unsqueeze(0)
+        try:
+            if input_tensor.dim() == 3:
+                input_tensor = input_tensor.unsqueeze(0)
+                
+            input_tensor = input_tensor.to(self.device)
+            # Ensure model parameters require grad for backward computation
+            for p in self.model.parameters():
+                p.requires_grad_(True)
+                
+            output = self.model(input_tensor)
+            probs = F.softmax(output, dim=1)
             
-        input_tensor.requires_grad_(True)
-        output = self.model(input_tensor)
-        
-        probs = F.softmax(output, dim=1)
-        
-        if target_class is None:
-            target_class = torch.argmax(output, dim=1).item()
+            if target_class is None:
+                target_class = torch.argmax(output, dim=1).item()
+                
+            self.model.zero_grad()
+            score = output[0, target_class]
+            score.backward(retain_graph=True)
             
-        score = output[0, target_class]
-        score.backward(retain_graph=True)
-        
-        # Spatial average of gradients
-        weights = torch.mean(self.gradients, dim=[2, 3], keepdim=True)
-        cam = torch.sum(weights * self.activations, dim=1, keepdim=True)
-        cam = F.relu(cam)
-        
-        cam_np = cam.squeeze().cpu().numpy()
-        min_v, max_v = np.min(cam_np), np.max(cam_np)
-        if max_v > min_v:
-            cam_np = (cam_np - min_v) / (max_v - min_v + 1e-8)
-        else:
-            cam_np = np.zeros_like(cam_np)
+            if self.gradients is None or self.activations is None:
+                raise RuntimeError("Grad-CAM could not capture activations or gradients from target layer.")
             
-        confidence = probs[0, target_class].item()
-        
-        return {
-            "heatmap": cam_np,
-            "target_class_idx": target_class,
-            "confidence": confidence,
-            "all_probabilities": probs[0].detach().cpu().numpy().tolist()
-        }
+            # Spatial average of gradients
+            weights = torch.mean(self.gradients, dim=[2, 3], keepdim=True)
+            cam = torch.sum(weights * self.activations, dim=1, keepdim=True)
+            cam = F.relu(cam)
+            
+            cam_np = cam.squeeze().cpu().numpy()
+            min_v, max_v = np.min(cam_np), np.max(cam_np)
+            if max_v > min_v:
+                cam_np = (cam_np - min_v) / (max_v - min_v + 1e-8)
+            else:
+                cam_np = np.zeros_like(cam_np)
+                
+            confidence = probs[0, target_class].item()
+            
+            return {
+                "heatmap": cam_np,
+                "target_class_idx": target_class,
+                "confidence": confidence,
+                "all_probabilities": probs[0].detach().cpu().numpy().tolist()
+            }
+        finally:
+            self.remove_hooks()
 
 
 def build_model(model_name="mobilenet_v3", num_classes=6, pretrained=True):

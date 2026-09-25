@@ -28,19 +28,20 @@ const TAB_TITLES = {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [health, setHealth] = useState({ status: 'checking', model_trained: true });
+  const [health, setHealth] = useState({ status: 'checking', model_trained: false, active_model: null });
+
+  const checkHealth = async () => {
+    try {
+      const h = await api.getHealth();
+      setHealth(h);
+    } catch (err) {
+      console.warn('Backend health check warning:', err);
+    }
+  };
 
   useEffect(() => {
-    async function checkHealth() {
-      try {
-        const h = await api.getHealth();
-        setHealth(h);
-      } catch (err) {
-        console.warn('Backend health check warning:', err);
-      }
-    }
     checkHealth();
-  }, []);
+  }, [activeTab]);
 
   function renderPage() {
     switch (activeTab) {
@@ -51,7 +52,7 @@ export default function App() {
       case 'data-analysis':
         return <DataAnalysis />;
       case 'model-training':
-        return <ModelTraining onTrainingComplete={() => setActiveTab('model-performance')} />;
+        return <ModelTraining onTrainingComplete={() => { checkHealth(); setActiveTab('model-performance'); }} />;
       case 'model-performance':
         return <ModelPerformance setActiveTab={setActiveTab} />;
       case 'predictions':
@@ -80,6 +81,7 @@ export default function App() {
           activeTitle={TAB_TITLES[activeTab] || 'Cognivision AI'}
           isBackendHealthy={health.status === 'healthy'}
           modelTrained={health.model_trained}
+          activeModelName={health.active_model?.architecture}
         />
         <main style={{ flex: 1, overflowY: 'auto' }}>
           {renderPage()}

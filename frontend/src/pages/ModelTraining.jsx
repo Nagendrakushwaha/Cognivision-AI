@@ -79,16 +79,26 @@ export default function ModelTraining({ onTrainingComplete }) {
       await api.startTraining(config);
       // Poll every 1.5s
       const poll = setInterval(async () => {
-        const s = await api.getTrainingStatus();
-        setStatus(s);
-        if (s.status !== 'training') {
-          clearInterval(poll);
-          setStarting(false);
-          if (onTrainingComplete) onTrainingComplete();
+        try {
+          const s = await api.getTrainingStatus();
+          setStatus(s);
+          if (s.status !== 'training') {
+            clearInterval(poll);
+            setStarting(false);
+            if (s.status === 'failed' && s.error_message) {
+              setErrorMsg(`Training failed: ${s.error_message}`);
+            }
+            if (s.status === 'completed' && onTrainingComplete) {
+              onTrainingComplete();
+            }
+          }
+        } catch (pollErr) {
+          console.error('Error polling training status:', pollErr);
         }
       }, 1500);
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to start training');
+      const msg = err.message ? (err.message.startsWith('Training failed:') ? err.message : `Training failed: ${err.message}`) : 'Training failed to start';
+      setErrorMsg(msg);
       setStarting(false);
     }
   }
@@ -337,11 +347,24 @@ export default function ModelTraining({ onTrainingComplete }) {
               </p>
             </div>
             <span className={`badge ${
-              isTraining ? 'badge-amber' : status && status.status === 'completed' ? 'badge-emerald' : 'badge-purple'
+              isTraining ? 'badge-amber' : status && status.status === 'completed' ? 'badge-emerald' : status && status.status === 'failed' ? 'badge-rose' : 'badge-purple'
             }`}>
               {status ? status.status.toUpperCase() : 'IDLE'}
             </span>
           </div>
+
+          {status && status.status === 'failed' && status.error_message && (
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#FCA5A5',
+              fontSize: '0.8rem'
+            }}>
+              <strong>Training Error:</strong> {status.error_message}
+            </div>
+          )}
 
           {/* Progress Bar */}
           <div>

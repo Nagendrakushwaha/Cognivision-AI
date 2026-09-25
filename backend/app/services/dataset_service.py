@@ -7,6 +7,13 @@ import numpy as np
 from PIL import Image
 from typing import Dict, Any, List, Optional
 from ..utils.image_processing import image_to_base64
+from ..utils.paths import (
+    DATASET_TRAIN_PARQUET,
+    DATASET_TEST_PARQUET,
+    TRAIN_META_FILE,
+    TEST_META_FILE,
+    PROJECT_ROOT
+)
 
 CLASS_NAMES = [
     "Bakery & Confectionery",
@@ -18,12 +25,12 @@ CLASS_NAMES = [
 ]
 
 class DatasetService:
-    def __init__(self, data_dir: str = "."):
-        self.data_dir = data_dir
-        self.train_parquet = os.path.join(data_dir, "train-00000-of-00001.parquet")
-        self.test_parquet = os.path.join(data_dir, "test-00000-of-00001.parquet")
-        self.train_meta_file = os.path.join(data_dir, "artifacts", "cache", "train_metadata.json")
-        self.test_meta_file = os.path.join(data_dir, "artifacts", "cache", "test_metadata.json")
+    def __init__(self, data_dir: Optional[str] = None):
+        self.data_dir = str(PROJECT_ROOT) if data_dir is None else data_dir
+        self.train_parquet = str(DATASET_TRAIN_PARQUET) if data_dir is None else os.path.join(data_dir, "train-00000-of-00001.parquet")
+        self.test_parquet = str(DATASET_TEST_PARQUET) if data_dir is None else os.path.join(data_dir, "test-00000-of-00001.parquet")
+        self.train_meta_file = str(TRAIN_META_FILE) if data_dir is None else os.path.join(data_dir, "artifacts", "cache", "train_metadata.json")
+        self.test_meta_file = str(TEST_META_FILE) if data_dir is None else os.path.join(data_dir, "artifacts", "cache", "test_metadata.json")
         
         self._train_meta = None
         self._test_meta = None

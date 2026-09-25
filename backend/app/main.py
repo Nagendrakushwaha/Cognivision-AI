@@ -6,6 +6,17 @@ from .api.dataset_routes import router as dataset_router
 from .api.model_routes import router as model_router
 from .api.predict_routes import router as predict_router
 from .api.explain_routes import router as explain_router
+from .services.predict_service import predict_service
+from .utils.paths import (
+    ensure_directories,
+    TRAIN_CACHE_FILE,
+    TEST_CACHE_FILE,
+    BEST_MODEL_PATH,
+    LATEST_MODEL_PATH
+)
+
+# Ensure directories exist on startup
+ensure_directories()
 
 app = FastAPI(
     title="COGNIVISION AI",
@@ -40,14 +51,16 @@ def root():
 
 @app.get("/api/health")
 def health_check():
-    train_cache_exists = os.path.exists("artifacts/cache/train_cache.pt")
-    test_cache_exists = os.path.exists("artifacts/cache/test_cache.pt")
-    model_exists = os.path.exists("models/best_model.pt") or os.path.exists("models/latest_model.pt")
+    train_cache_exists = TRAIN_CACHE_FILE.exists()
+    test_cache_exists = TEST_CACHE_FILE.exists()
+    model_exists = BEST_MODEL_PATH.exists() or LATEST_MODEL_PATH.exists()
+    active_model_info = predict_service.get_active_model_info()
     
     return {
         "status": "healthy",
         "cache_ready": train_cache_exists and test_cache_exists,
         "model_trained": model_exists,
+        "active_model": active_model_info,
         "device": "CPU (AMD Ryzen 5 5500U optimized)"
     }
 
