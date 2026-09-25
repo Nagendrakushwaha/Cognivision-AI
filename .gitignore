@@ -11,8 +11,17 @@ venv/
 # Environment
 .env
 
-# ML models
+# ML models & cache
 *.pt
 *.pth
 *.bin
 *.safetensors
+artifacts/cache/*.pt
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+frontend/.vite/
