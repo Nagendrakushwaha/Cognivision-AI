@@ -1,87 +1,47 @@
 {
   "model_name": "mobilenet_v3",
-  "epochs": 10,
+  "epochs": 5,
   "history": [
     {
       "epoch": 1,
-      "train_loss": 1.5612,
-      "train_acc": 0.3513,
-      "val_loss": 1.7027,
-      "val_acc": 0.344,
-      "duration_seconds": 3.53
+      "train_loss": 1.61,
+      "train_acc": 0.3134,
+      "val_loss": 1.7269,
+      "val_acc": 0.296,
+      "duration_seconds": 6.85
     },
     {
       "epoch": 2,
-      "train_loss": 1.1361,
-      "train_acc": 0.5768,
-      "val_loss": 2.1111,
-      "val_acc": 0.264,
-      "duration_seconds": 3.8
+      "train_loss": 1.1742,
+      "train_acc": 0.5509,
+      "val_loss": 1.8246,
+      "val_acc": 0.352,
+      "duration_seconds": 6.16
     },
     {
       "epoch": 3,
-      "train_loss": 0.9698,
-      "train_acc": 0.6447,
-      "val_loss": 1.8254,
-      "val_acc": 0.264,
-      "duration_seconds": 3.76
+      "train_loss": 1.0919,
+      "train_acc": 0.6008,
+      "val_loss": 2.0456,
+      "val_acc": 0.336,
+      "duration_seconds": 7.2
     },
     {
       "epoch": 4,
-      "train_loss": 0.9004,
-      "train_acc": 0.6607,
-      "val_loss": 1.6568,
-      "val_acc": 0.344,
-      "duration_seconds": 4.07
+      "train_loss": 0.8503,
+      "train_acc": 0.6886,
+      "val_loss": 1.8084,
+      "val_acc": 0.336,
+      "duration_seconds": 5.9
     },
     {
       "epoch": 5,
-      "train_loss": 0.7777,
-      "train_acc": 0.7086,
-      "val_loss": 1.8617,
-      "val_acc": 0.4,
-      "duration_seconds": 4.17
-    },
-    {
-      "epoch": 6,
-      "train_loss": 0.5794,
-      "train_acc": 0.7824,
-      "val_loss": 2.2809,
-      "val_acc": 0.376,
-      "duration_seconds": 4.13
-    },
-    {
-      "epoch": 7,
-      "train_loss": 0.4755,
-      "train_acc": 0.8463,
-      "val_loss": 3.0514,
-      "val_acc": 0.376,
-      "duration_seconds": 4.06
-    },
-    {
-      "epoch": 8,
-      "train_loss": 0.4513,
-      "train_acc": 0.8463,
-      "val_loss": 2.5019,
-      "val_acc": 0.4,
-      "duration_seconds": 4.08
-    },
-    {
-      "epoch": 9,
-      "train_loss": 0.3795,
-      "train_acc": 0.8842,
-      "val_loss": 2.5392,
-      "val_acc": 0.456,
-      "duration_seconds": 4.22
-    },
-    {
-      "epoch": 10,
-      "train_loss": 0.287,
-      "train_acc": 0.9022,
-      "val_loss": 3.1181,
-      "val_acc": 0.416,
-      "duration_seconds": 4.32
+      "train_loss": 0.6649,
+      "train_acc": 0.7545,
+      "val_loss": 2.3141,
+      "val_acc": 0.288,
+      "duration_seconds": 5.73
     }
   ],
-  "saved_at": "2026-09-25 17:33:56"
+  "saved_at": "2026-09-29 18:17:42"
 }

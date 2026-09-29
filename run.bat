@@ -15,8 +15,8 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [1/2] Starting FastAPI Backend on http://127.0.0.1:8000 ...
-start "Cognivision AI - FastAPI Backend" cmd /k "py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload"
+echo [1/2] Starting FastAPI Backend on http://127.0.0.1:8001 ...
+start "Cognivision AI - FastAPI Backend" cmd /k "py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --reload"
 
 echo.
 echo [2/2] Starting React + Vite Frontend on http://localhost:5173 ...
@@ -33,8 +33,8 @@ echo.
 echo ============================================================
 echo   Cognivision AI is now running!
 echo   Frontend : http://localhost:5173
-echo   Backend  : http://127.0.0.1:8000
-echo   API Docs : http://127.0.0.1:8000/docs
+echo   Backend  : http://127.0.0.1:8001
+echo   API Docs : http://127.0.0.1:8001/docs
 echo ============================================================
 echo Keep the server windows open while using the application.
 echo To stop the servers, close their respective command windows.

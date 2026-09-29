@@ -11,8 +11,8 @@ Write-Host "Detected: $pyVersion" -ForegroundColor Green
 Write-Host ""
 
 # Start Backend in separate PowerShell window
-Write-Host "[1/2] Starting FastAPI Backend on http://127.0.0.1:8000 ..." -ForegroundColor Yellow
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload"
+Write-Host "[1/2] Starting FastAPI Backend on http://127.0.0.1:8001 ..." -ForegroundColor Yellow
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --reload"
 
 # Start Frontend in separate PowerShell window
 Write-Host "[2/2] Starting React + Vite Frontend on http://localhost:5173 ..." -ForegroundColor Yellow
@@ -27,7 +27,7 @@ Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host "   Cognivision AI is now live!                              " -ForegroundColor Green
 Write-Host "   Frontend : http://localhost:5173                         " -ForegroundColor White
-Write-Host "   Backend  : http://127.0.0.1:8000                         " -ForegroundColor White
-Write-Host "   API Docs : http://127.0.0.1:8000/docs                    " -ForegroundColor White
+Write-Host "   Backend  : http://127.0.0.1:8001                         " -ForegroundColor White
+Write-Host "   API Docs : http://127.0.0.1:8001/docs                    " -ForegroundColor White
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host "Close the spawned server windows to shut down the app." -ForegroundColor Gray
