@@ -9,7 +9,21 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8001',
-        changeOrigin: true
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on('error', (err, _req, res) => {
+            if (res && !res.headersSent) {
+              res.writeHead(503, {
+                'Content-Type': 'application/json'
+              });
+              res.end(JSON.stringify({
+                status: 'error',
+                message: 'FastAPI Backend is starting or offline at http://127.0.0.1:8001.',
+                error: err.code
+              }));
+            }
+          });
+        }
       }
     }
   }

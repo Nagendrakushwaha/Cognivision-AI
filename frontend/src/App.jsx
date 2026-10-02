@@ -36,6 +36,7 @@ export default function App() {
       setHealth(h);
     } catch (err) {
       console.warn('Backend health check warning:', err);
+      setHealth(prev => ({ ...prev, status: 'offline' }));
     }
   };
 

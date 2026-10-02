@@ -363,7 +363,7 @@ The application is engineered as a decoupled full-stack architecture:
 
 - **Framework**: FastAPI 0.115 with Starlette and Pydantic v2.
 - **Asynchronous Execution**: Background threading for model training jobs, non-blocking status polling.
-- **Proxy Configuration**: Vite dev server proxies `/api` requests to `http://127.0.0.1:8000`.
+- **Proxy Configuration**: Vite dev server proxies `/api` requests to `http://127.0.0.1:8001`.
 
 ---
 
@@ -474,12 +474,26 @@ cd ..
 
 ## Execution Guide (Automated & Manual)
 
-### Method A: 1-Click Automated Run (Recommended)
+### Method A: Unified npm Command (Recommended)
 
-You do **NOT** need to open multiple command windows manually. Use the one-click launcher:
+Simply run from the project root:
+```bash
+npm run dev
+```
+
+This automatically:
+1. Detects Python 3.13 / Python environment.
+2. Clears any stale port conflicts on ports 8001 and 5173.
+3. Launches the FastAPI backend on `http://127.0.0.1:8001`.
+4. Waits for the backend to become healthy.
+5. Launches the React + Vite frontend on `http://localhost:5173`.
+6. Gracefully terminates both servers cleanly on `Ctrl+C`.
+
+---
+
+### Method B: 1-Click Launchers (Windows)
 
 - **Windows Batch (Command Prompt / Double Click)**:
-  Simply double-click [`run.bat`](file:///f:/Cognivision%20AI/run.bat) or run:
   ```cmd
   run.bat
   ```
@@ -489,25 +503,19 @@ You do **NOT** need to open multiple command windows manually. Use the one-click
   .\run.ps1
   ```
 
-What the automated launcher does automatically:
-1. Verifies Python 3.13 environment.
-2. Spawns the FastAPI backend server on `http://127.0.0.1:8000`.
-3. Spawns the React + Vite frontend server on `http://localhost:5173`.
-4. Automatically opens `http://localhost:5173` in your default browser.
-
 ---
 
-### Method B: Manual Step-by-Step Run
+### Method C: Manual Step-by-Step Run
 
 If you prefer to run services manually in individual terminal windows:
 
 #### Terminal 1 — Start FastAPI Backend:
 ```bash
-py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --reload
 ```
-- REST API: `http://127.0.0.1:8000`
-- Interactive Swagger UI: `http://127.0.0.1:8000/docs`
-- Health Check: `http://127.0.0.1:8000/api/health`
+- REST API: `http://127.0.0.1:8001`
+- Interactive Swagger UI: `http://127.0.0.1:8001/docs`
+- Health Check: `http://127.0.0.1:8001/api/health`
 
 #### Terminal 2 — Start React Frontend:
 ```bash
@@ -515,7 +523,7 @@ cd frontend
 npm run dev
 ```
 - Open `http://localhost:5173` in your browser.
-- All `/api/*` network requests automatically route to the backend on port 8000.
+- All `/api/*` network requests automatically route to the backend on port 8001.
 
 ---
 

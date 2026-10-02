@@ -47,9 +47,9 @@ export default function Navbar({ activeTitle, isBackendHealthy = true, modelTrai
         </div>
 
         {/* Python Version & Backend Status */}
-        <div className="badge badge-cyan" style={{ padding: '6px 12px' }}>
+        <div className={`badge ${isBackendHealthy ? 'badge-cyan' : 'badge-rose'}`} style={{ padding: '6px 12px' }}>
           <Activity size={13} />
-          <span>FastAPI • Python 3.13</span>
+          <span>{isBackendHealthy ? 'FastAPI • Python 3.13' : 'Backend Disconnected'}</span>
         </div>
       </div>
     </header>

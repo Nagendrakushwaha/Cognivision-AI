@@ -7,7 +7,7 @@ import urllib.request
 import urllib.error
 from PIL import Image
 
-BASE_URL = "http://127.0.0.1:8000/api"
+BASE_URL = "http://127.0.0.1:8001/api"
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
 BEST_MODEL_PATH = os.path.join(MODELS_DIR, "best_model.pt")

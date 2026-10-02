@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "COGNIVISION AI - Document Computer Vision & Intelligence Platform",
   "scripts": {
-    "dev": "npm run dev --prefix frontend",
+    "dev": "node scripts/dev.js",
+    "start": "node scripts/dev.js",
+    "dev:backend": "py -3.13 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --reload",
+    "dev:frontend": "npm run dev --prefix frontend",
     "build": "npm run build --prefix frontend",
     "preview": "npm run preview --prefix frontend"
   },

@@ -3,7 +3,7 @@ import json
 import urllib.request
 import urllib.error
 
-BASE_URL = "http://127.0.0.1:8000/api"
+BASE_URL = "http://127.0.0.1:8001/api"
 
 def test_training_pipeline():
     print("=== TEST 1 & 2: Starting 1-epoch CPU training for cogninet_cnn ===")

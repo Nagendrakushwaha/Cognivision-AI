@@ -39,15 +39,27 @@ app.include_router(model_router)
 app.include_router(predict_router)
 app.include_router(explain_router)
 
+from fastapi.responses import JSONResponse, RedirectResponse, Response
+
 @app.get("/")
-def root():
+def root(request: Request):
+    accept = request.headers.get("accept", "")
+    # If opened directly in a web browser, redirect to the full React frontend UI
+    if "text/html" in accept:
+        return RedirectResponse(url="http://localhost:5173/", status_code=307)
     return {
         "project": "COGNIVISION AI",
         "description": "Multimodal Computer Vision & Document Intelligence System",
         "dataset": "SROIE Benchmark (Scanned Receipts OCR and Information Extraction)",
         "version": "1.0.0",
-        "status": "operational"
+        "status": "operational",
+        "web_ui": "http://localhost:5173",
+        "docs": "http://127.0.0.1:8001/docs"
     }
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return Response(status_code=204)
 
 @app.get("/api/health")
 def health_check():
